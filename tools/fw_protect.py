@@ -13,6 +13,10 @@ from pwn import *
 
 def protect_firmware(infile, outfile, version, message):
     # Load firmware binary from infile
+    
+    with open('bootloader/secret_build_output.txt', 'rb') as secrets_file:
+        vkey = secrets_file.read(2)
+
     with open(infile, "rb") as fp:
         firmware = fp.read()
 
@@ -23,7 +27,10 @@ def protect_firmware(infile, outfile, version, message):
     metadata = p16(version, endian='little') + p16(len(firmware), endian='little')  
 
     # Append firmware and message to metadata
-    firmware_blob = metadata + firmware_and_message
+    encrypted = b""
+    for i in range(len(firmware_and_message)):
+        encrypted = encrypted + p8(firmware_and_message[i]^vkey[i%2])
+    firmware_blob = metadata + encrypted
 
     # Write firmware blob to outfile
     with open(outfile, "wb+") as outfile:

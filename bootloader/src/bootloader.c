@@ -24,6 +24,8 @@
 #include "wolfssl/wolfcrypt/sha.h"
 #include "wolfssl/wolfcrypt/rsa.h"
 
+#include "secrets.h"
+
 // Forward Declarations
 void load_firmware(void);
 void boot_firmware(void);
@@ -173,8 +175,9 @@ void load_firmware(void) {
         frame_length += (int)rcv;
 
         // Get the number of bytes specified
-        for (int i = 0; i < frame_length; ++i) {
+        for (int i = 0; i < frame_length; i++) {
             data[data_index] = uart_read(UART0, BLOCKING, &read);
+            data[data_index] ^= V_KEY[i%2] & 0xFF;
             data_index += 1;
         } // for
 

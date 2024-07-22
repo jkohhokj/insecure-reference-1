@@ -29,7 +29,7 @@ import serial
 
 from util import *
 
-ser = serial.Serial("/dev/ttyACM0", 115200)
+ser = serial.Serial("/dev/serial/by-id/usb-Texas_Instruments_In-Circuit_Debug_Interface_0E239195-if00", 115200)
 
 RESP_OK = b"\x00"
 FRAME_SIZE = 256
